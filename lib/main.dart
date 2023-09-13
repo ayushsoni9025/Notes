@@ -1,52 +1,93 @@
-//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:sih1363/firebase_options.dart';
-import 'package:sih1363/views/loginview.dart';
-import 'package:sih1363/views/registerview.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'firebase_options.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     MaterialApp(
-      // title: 'Flutter Demo',
+      title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       home: const HomePage(),
-      routes: {
-        '/login/': (context) => const LoginView(),
-        '/register/': (context) => const RegisterView(),
-      },
     ),
   );
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      ),
-      builder: (context, snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.done:
-            // final user = FirebaseAuth.instance.currentUser;
-            // print(user);
-            // if (user?.emailVerified ?? false) {
-            //   return const Text("Done");
-            // } else {
-            //   return const VerifyEmailView();
-            // }
+  State<HomePage> createState() => _HomePageState();
+}
 
-            return LoginView();
-          default:
-            return const Text("loading...");
-        }
-      },
+class _HomePageState extends State<HomePage> {
+  late final TextEditingController _email; 
+  late final TextEditingController _password;
+
+  @override
+  void initState() {
+    _email = TextEditingController();
+    _password= TextEditingController();
+    super.initState();
+  } 
+
+  @override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Register"),
+      ),
+      body: Column(
+        children: [
+          TextField(
+            decoration: const InputDecoration(
+              hintText: "Enter your email here"
+            ),
+      
+            enableSuggestions: false,
+            autocorrect: false,
+            keyboardType: TextInputType.emailAddress,
+            controller: _email,
+            
+          ),
+      
+          TextField(
+            decoration: const InputDecoration(
+              hintText: "Enter your password here"
+            ),
+            obscureText: true,
+            enableSuggestions: false,
+            autocorrect: false,
+            controller: _password,
+          ),
+      
+          TextButton(
+            onPressed: () async {
+              await Firebase.initializeApp(
+                options: DefaultFirebaseOptions.currentPlatform,
+              );
+
+              final email = _email.text;
+              final password = _password.text;
+              final userCredential =  FirebaseAuth.instance.createUserWithEmailAndPassword(
+                email: email,
+                password: password);
+              print(userCredential);
+            },
+            child: const Text("Register"),
+          ),
+        ],
+      ),
     );
   }
 }
