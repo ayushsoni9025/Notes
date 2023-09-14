@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sih1363/views/login_view.dart';
 import 'package:sih1363/views/register_view.dart';
+import 'package:sih1363/views/verify_email_view.dart';
 import 'firebase_options.dart';
 
 void main() {
@@ -14,6 +15,10 @@ void main() {
         primarySwatch: Colors.blue,
       ),
       home: const HomePage(),
+      routes: {
+        '/login/': (context) => const LoginView(),
+        '/register/': (context) => const RegisterView(),
+      },
     ),
   );
 }
@@ -26,7 +31,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  
   late final TextEditingController _email;
   late final TextEditingController _password;
 
@@ -46,39 +50,27 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Login"),
+    return FutureBuilder(
+      future: Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
       ),
-      body: FutureBuilder(
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        ),
-        builder: (context, snapshot) {
-          switch(snapshot.connectionState){
-            case ConnectionState.done:
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.done:
             final user = FirebaseAuth.instance.currentUser;
-            if(user?.emailVerified ?? false){
-              print("user is verified");
+            if (user != null) {
+              if (user.emailVerified) {
+                return const Text("DONE");
+              } else {
+                return const VerifyEmailView();
+              }
+            } else {
+              return const LoginView();
             }
-            else{
-              print("user is not verified");
-
-            }
-            return const Text("Done");
-            // case ConnectionState.none:
-            // break;
-            // case ConnectionState.waiting:
-            // break;
-            // case ConnectionState.active:
-            // break;
-            default:
-            return const Text("loading");
-
-          }
-          
-        },
-      ),
+          default:
+            return CircularProgressIndicator();
+        }
+      },
     );
   }
 }
