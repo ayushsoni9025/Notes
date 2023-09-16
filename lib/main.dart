@@ -19,8 +19,8 @@ void main() {
       home: const HomePage(),
       routes: {
         loginRoute: (context) => const LoginView(),
-        registerRoute : (context) => const RegisterView(),
-        mainUiRoute : (context) => const MainUI(),
+        registerRoute: (context) => const RegisterView(),
+        mainUiRoute: (context) => const MainUI(),
       },
     ),
   );
@@ -148,4 +148,15 @@ Future<bool> showLogOutDialog(BuildContext context) {
       );
     },
   ).then((value) => value ?? false);
+}
+
+void errorMessage(
+  BuildContext context,
+  String text,
+) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(text),
+    ),
+  );
 }
