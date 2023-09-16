@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sih1363/views/register_view.dart';
+import 'dart:developer' as devtool show log;
+
+import 'package:sih1363/constant/routes.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -36,7 +38,8 @@ class _LoginViewState extends State<LoginView> {
       body: Column(
         children: [
           TextField(
-            decoration: const InputDecoration(hintText: "Enter your email here"),
+            decoration:
+                const InputDecoration(hintText: "Enter your email here"),
             enableSuggestions: false,
             autocorrect: false,
             keyboardType: TextInputType.emailAddress,
@@ -55,17 +58,27 @@ class _LoginViewState extends State<LoginView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                final userCredential = await FirebaseAuth.instance
-                    .signInWithEmailAndPassword(email: email, password: password);
-                print(userCredential);
+                final userCredential =
+                    await FirebaseAuth.instance.signInWithEmailAndPassword(
+                  email: email,
+                  password: password,
+                );
+                devtool.log(
+                  userCredential.toString(),
+                );
+                //Object? value = null;
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  mainUiRoute,
+                  (route) => false,
+                );
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'user-not-found') {
-                  print("userNotFound");
+                  devtool.log("userNotFound");
                 } else if (e.code == 'wrong-password') {
-                  print("WRONG PASSWORD");
+                  devtool.log("WRONG PASSWORD");
                 } else {
-                  print("Some thing else happen");
-                  print(e);
+                  devtool.log("Some thing else happen");
+                  devtool.log(e.toString());
                 }
               }
             },
@@ -74,7 +87,7 @@ class _LoginViewState extends State<LoginView> {
           TextButton(
             onPressed: () {
               Navigator.of(context)
-                  .pushNamedAndRemoveUntil('/register/', (route) => false);
+                  .pushNamedAndRemoveUntil(registerRoute, (route) => false);
             },
             child: const Text('Not register yet? Register here'),
           )
