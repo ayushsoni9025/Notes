@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as devtool show log;
 
 import 'package:sih1363/constant/routes.dart';
-import 'package:sih1363/main.dart';
+import 'package:sih1363/utility/scaffold_message.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});

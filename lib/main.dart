@@ -150,13 +150,4 @@ Future<bool> showLogOutDialog(BuildContext context) {
   ).then((value) => value ?? false);
 }
 
-void errorMessage(
-  BuildContext context,
-  String text,
-) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(text),
-    ),
-  );
-}
+
