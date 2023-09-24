@@ -1,8 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtool show log;
-
 import 'package:sih1363/constant/routes.dart';
+import 'package:sih1363/services/auth/auth_exception.dart';
+import 'package:sih1363/services/auth/auth_service.dart';
 import 'package:sih1363/utility/scaffold_message.dart';
 
 class LoginView extends StatefulWidget {
@@ -59,16 +58,12 @@ class _LoginViewState extends State<LoginView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                final userCredential =
-                    await FirebaseAuth.instance.signInWithEmailAndPassword(
+                await AuthService.firebase().logIn(
                   email: email,
                   password: password,
                 );
-                devtool.log(
-                  userCredential.toString(),
-                );
-                final user = FirebaseAuth.instance.currentUser;
-                if (user?.emailVerified ?? false) {
+                final user = AuthService.firebase().currentUser;
+                if (user?.isEmailVerified ?? false) {
                   Navigator.of(context)
                       .pushNamedAndRemoveUntil(mainUiRoute, (route) => false);
                 } else {
@@ -76,24 +71,18 @@ class _LoginViewState extends State<LoginView> {
                     verifyEmailRoute,
                   );
                 }
-              } on FirebaseAuthException catch (e) {
-                if (e.code == 'user-not-found') {
-                  snackMessage(
-                    context,
-                    'Invalid Email',
-                  );
-                } else if (e.code == 'wrong-password') {
-                  devtool.log("WRONG PASSWORD");
-                  snackMessage(
-                    context,
-                    'Invalid Password',
-                  );
-                } else {
-                  devtool.log("Some thing else happen");
-                  snackMessage(context, "Error ${e.code}");
-                }
-              } catch (e) {
-                snackMessage(context, e.toString());
+              } on UserNotFoundAuthException {
+                snackMessage(
+                  context,
+                  'Invalid Email',
+                );
+              } on WrongPasswordAuthException {
+                snackMessage(
+                  context,
+                  'Invalid Password',
+                );
+              } on GenericAuthException {
+                snackMessage(context, "Authentication error");
               }
             },
             child: const Text("Login"),
