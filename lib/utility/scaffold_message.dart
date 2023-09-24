@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-void errorMessage(
+void snackMessage(
   BuildContext context,
   String text,
 ) {

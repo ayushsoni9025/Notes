@@ -67,30 +67,33 @@ class _LoginViewState extends State<LoginView> {
                 devtool.log(
                   userCredential.toString(),
                 );
-                //Object? value = null;
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  mainUiRoute,
-                  (route) => false,
-                );
+                final user = FirebaseAuth.instance.currentUser;
+                if (user?.emailVerified ?? false) {
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil(mainUiRoute, (route) => false);
+                } else {
+                  Navigator.of(context).pushNamed(
+                    verifyEmailRoute,
+                  );
+                }
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'user-not-found') {
-                  errorMessage(
+                  snackMessage(
                     context,
                     'Invalid Email',
                   );
                 } else if (e.code == 'wrong-password') {
                   devtool.log("WRONG PASSWORD");
-                  errorMessage(
+                  snackMessage(
                     context,
                     'Invalid Password',
                   );
                 } else {
                   devtool.log("Some thing else happen");
-                  errorMessage(context, "Error ${e.code}");
+                  snackMessage(context, "Error ${e.code}");
                 }
-              } catch(e){
-                errorMessage(context, e.toString());
-
+              } catch (e) {
+                snackMessage(context, e.toString());
               }
             },
             child: const Text("Login"),
