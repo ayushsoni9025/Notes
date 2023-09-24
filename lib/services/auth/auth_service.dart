@@ -30,8 +30,8 @@ class AuthService implements AuthProvider {
       );
 
   @override
-  Future<void> logOut() {}
+  Future<void> logOut() => provider.logOut();
 
   @override
-  Future<void> sendEmailVerification() {}
+  Future<void> sendEmailVerification() => provider.sendEmailVerification();
 }
